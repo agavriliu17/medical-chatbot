@@ -8,26 +8,13 @@ import EmojiObjectsOutlinedIcon from "@mui/icons-material/EmojiObjectsOutlined";
 import { Configuration, OpenAIApi } from "openai";
 
 const PROMPTS = {
-  icy: {
-    empty:
-      "Will autocomplete the user's text with an possible question he has about Conversational Artificial Intelligence team from E.on",
-    filled:
-      "Will autocomplete the user's text with an possible question he has about Conversational Artificial Intelligence team from E.on. Will think like an e.on employee and will only give short completions:",
-  },
-  hr: {
-    empty:
-      "Will autocomplete the user's text with an possible question he has about HR team from E.on",
-    filled:
-      "Will autocomplete the user's text with an possible question he has about HR team from E.on. Will think like an e.on employee and will give short completions:",
-  },
-  random: {
-    empty: "Will autocomplete the user's text with an possible question he has about E.on",
-    filled:
-      "Will autocomplete the user's text with an possible question he has about E.on. Will think like an someone who doesn't know much about e.on and will give short completions:",
-  },
+  empty:
+    "Will autocomplete the user's text with an possible question he has about Conversational Artificial Intelligence team from E.on",
+  filled:
+    "Will autocomplete the user's text with an possible question he has about Conversational Artificial Intelligence team from E.on. Will think like an e.on employee and will only give short completions:",
 };
 
-const Buttons = ({ input, setInput, sendMessage, type }) => {
+const Buttons = ({ input, setInput, sendMessage }) => {
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState("");
 
@@ -45,10 +32,10 @@ const Buttons = ({ input, setInput, sendMessage, type }) => {
 
   const handleRequest = async () => {
     try {
-      let prompt = `${PROMPTS[type].filled} 
+      let prompt = `${PROMPTS.filled} 
         ${input}`;
       if (input === "") {
-        prompt = PROMPTS[type].empty;
+        prompt = PROMPTS.empty;
       }
 
       setLoading(true);

@@ -6,7 +6,8 @@ const ChatWindows = ({ conversation }) => {
   return (
     <Sheet
       sx={{
-        height: "650px",
+        maxHeight: "550px",
+        height: "100%",
         width: "500px",
         borderRadius: "10px",
         boxShadow:

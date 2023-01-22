@@ -7,19 +7,10 @@ import ChatWindows from "./ChatWindows";
 import { Typography } from "@mui/joy";
 import { Configuration, OpenAIApi } from "openai";
 
-import FormControl from "@mui/joy/FormControl";
-import FormLabel from "@mui/joy/FormLabel";
-import Radio from "@mui/joy/Radio";
-import RadioGroup from "@mui/joy/RadioGroup";
-
 import icyBot from "./data/chatsIcy.json";
-import hrBot from "./data/chatsHr.json";
-import randomBot from "./data/chatsRandom.json";
 
 function App() {
-  const [loading, setLoading] = useState(false);
   const [conversation, setConversation] = useState(icyBot);
-  const [value, setValue] = React.useState("hr");
   const [input, setInput] = useState("");
 
   const configuration = new Configuration({
@@ -37,16 +28,6 @@ function App() {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversation]);
-
-  useEffect(() => {
-    if (value === "icy") {
-      setConversation(icyBot);
-    } else if (value === "hr") {
-      setConversation(hrBot);
-    } else {
-      setConversation(randomBot);
-    }
-  }, [value]);
 
   const handleInputChange = (event) => {
     setInput(event.target.value);
@@ -86,10 +67,9 @@ function App() {
       });
       console.log(promptConversation);
 
-      setLoading(true);
       const response = await openai.createCompletion({
         model: "text-davinci-003",
-        prompt: `This is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly.
+        prompt: `This is a conversation with an medical chatbot. The bot will try to diagnose the patient's disease and ask as questions about the symptoms to determine severity.
         ${promptConversation}`,
         temperature: 0.3,
         max_tokens: 100,
@@ -111,11 +91,6 @@ function App() {
     } catch (error) {
       console.log(error);
     }
-    setLoading(false);
-  };
-
-  const handleChange = (event) => {
-    setValue(event.target.value);
   };
 
   return (
@@ -130,7 +105,9 @@ function App() {
           flexDirection: "column",
         }}
       >
-        <Typography sx={{ marginBottom: "40px", fontSize: "50px" }}>OpenAI Chatbot Demo</Typography>
+        <Typography sx={{ marginBottom: "40px", fontSize: "50px" }}>
+          Medical Chatbot Demo
+        </Typography>
 
         <Sheet
           sx={{
@@ -151,30 +128,8 @@ function App() {
               value={input}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
-              endDecorator={
-                <Buttons input={input} setInput={setInput} sendMessage={sendMessage} type={value} />
-              }
+              endDecorator={<Buttons input={input} setInput={setInput} sendMessage={sendMessage} />}
             />
-          </Sheet>
-
-          {/* Chat settings */}
-          <Sheet
-            sx={{ display: "flex", flexDirection: "row", marginTop: "20px", alignSelf: "baseline" }}
-          >
-            <FormControl>
-              <FormLabel>Chat purpose</FormLabel>
-              <RadioGroup
-                defaultValue="hr"
-                name="controlled-radio-buttons-group"
-                value={value}
-                onChange={handleChange}
-                sx={{ my: 1 }}
-              >
-                <Radio value="hr" label="Human Resources assistant" />
-                <Radio value="icy" label="CAI team-bot" />
-                <Radio value="random" label="Random conversation buddy" />
-              </RadioGroup>
-            </FormControl>
           </Sheet>
         </Sheet>
       </Sheet>
