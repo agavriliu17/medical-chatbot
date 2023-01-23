@@ -5,46 +5,56 @@ import Buttons from "./Buttons";
 import Sheet from "@mui/joy/Sheet";
 import ChatWindows from "./ChatWindows";
 import { Typography } from "@mui/joy";
-import { Configuration, OpenAIApi } from "openai";
+// import { Configuration, OpenAIApi } from "openai";
+import axios from "axios";
 
 import icyBot from "./data/chatsIcy.json";
 
 function App() {
   const [conversation, setConversation] = useState(icyBot);
   const [input, setInput] = useState("");
-
-  const configuration = new Configuration({
-    apiKey: process.env.REACT_APP_OPEN_API_1,
-  });
-  const openai = new OpenAIApi(configuration);
+  const [chatID, setChatID] = useState("");
 
   useEffect(() => {
     (async () => {
-      const lastEntry = conversation[conversation.length - 1];
-      if (lastEntry.user === "Human") {
-        await getAIResponse();
-      }
-    })();
+      const response = await axios.get("http://127.0.0.1:8000/start_conversation");
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [conversation]);
+      setChatID(response.data);
+    })();
+  }, []);
+
+  // const configuration = new Configuration({
+  //   apiKey: process.env.REACT_APP_OPEN_API_1,
+  // });
+  // // const openai = new OpenAIApi(configuration);
+
+  // useEffect(() => {
+  //   (async () => {
+  //     const lastEntry = conversation[conversation.length - 1];
+  //     if (lastEntry.user === "Human") {
+  //       await getAIResponse();
+  //     }
+  //   })();
+
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [conversation]);
 
   const handleInputChange = (event) => {
     setInput(event.target.value);
   };
 
-  const sendMessage = () => {
-    setConversation([
-      ...conversation,
-      {
-        id: conversation.length + 1,
-        user: "Human",
-        message: input,
-      },
-    ]);
+  // const sendMessage = () => {
+  //   setConversation([
+  //     ...conversation,
+  //     {
+  //       id: conversation.length + 1,
+  //       user: "Human",
+  //       message: input,
+  //     },
+  //   ]);
 
-    setInput("");
-  };
+  //   setInput("");
+  // };
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
@@ -52,42 +62,50 @@ function App() {
     }
   };
 
-  const getAIResponse = async () => {
+  const sendMessage = async () => {
     try {
-      let promptConversation = "";
+      // let promptConversation = "";
 
-      conversation.forEach((entry) => {
-        if (entry.user === "Human") {
-          promptConversation += `Human: ${entry.message}
-          `;
-        } else {
-          promptConversation += `AI: ${entry.message}
-          `;
-        }
-      });
-      console.log(promptConversation);
+      // conversation.forEach((entry) => {
+      //   if (entry.user === "Human") {
+      //     promptConversation += `Human: ${entry.message}
+      //     `;
+      //   } else {
+      //     promptConversation += `AI: ${entry.message}
+      //     `;
+      //   }
+      // });
 
-      const response = await openai.createCompletion({
-        model: "text-davinci-003",
-        prompt: `This is a conversation with an medical chatbot. The bot will try to diagnose the patient's disease and ask as questions about the symptoms to determine severity.
-        ${promptConversation}`,
-        temperature: 0.3,
-        max_tokens: 100,
-        top_p: 0.5,
-        frequency_penalty: 1.65,
-        presence_penalty: 0.55,
-        stop: [" Human:", " AI:"],
-      });
+      // const response = await openai.createCompletion({
+      //   model: "text-davinci-003",
+      //   prompt: `This is a conversation with an medical chatbot. The bot will try to diagnose the patient's disease and ask as questions about the symptoms to determine severity.
+      //   ${promptConversation}`,
+      //   temperature: 0.3,
+      //   max_tokens: 100,
+      //   top_p: 0.5,
+      //   frequency_penalty: 1.65,
+      //   presence_penalty: 0.55,
+      //   stop: [" Human:", " AI:"],
+      // });
 
-      console.log(response.data.choices[0].text);
-      setConversation([
-        ...conversation,
-        {
-          id: conversation.length + 1,
-          user: "AI",
-          message: response.data.choices[0].text,
-        },
-      ]);
+      // setConversation([
+      //   ...conversation,
+      //   {
+      //     id: conversation.length + 1,
+      //     user: "AI",
+      //     message: response.data.choices[0].text,
+      //   },
+      // ]);
+      const textToSend = input;
+      setInput("");
+
+      const response = await axios
+        .post(`http://127.0.0.1:8000/completion/${chatID}`, {
+          text: textToSend,
+        })
+        .then((res) => res.data);
+
+      setConversation(response);
     } catch (error) {
       console.log(error);
     }

@@ -22,7 +22,7 @@ const ChatWindows = ({ conversation }) => {
     >
       <Sheet sx={{ height: "20px" }} />
       {conversation.map((convo, index) => (
-        <ChatBubble key={index} user={convo.user} text={convo.message} />
+        <ChatBubble key={index} user={convo.type} text={convo.message} />
       ))}
     </Sheet>
   );

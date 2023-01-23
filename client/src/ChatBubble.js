@@ -11,11 +11,11 @@ const ChatBubble = ({ user, text }) => {
       sx={{
         display: "flex",
         flexDirection: "row",
-        justifyContent: user === "AI" ? "flex-start" : "flex-end",
+        justifyContent: user === "bot" ? "flex-start" : "flex-end",
         alignItems: "flex-start",
       }}
     >
-      {user === "AI" && (
+      {user === "bot" && (
         <Avatar src={AiAvatar} sx={{ width: "40px", height: "40px", margin: "10px" }} />
       )}
       <Sheet
@@ -29,7 +29,7 @@ const ChatBubble = ({ user, text }) => {
       >
         <Typography>{text}</Typography>
       </Sheet>
-      {user !== "AI" && (
+      {user !== "bot" && (
         <Avatar
           src="https://avatars.githubusercontent.com/u/75184750?v=4"
           sx={{ width: "40px", height: "40px", margin: "10px" }}
