@@ -24,6 +24,7 @@ const ChatWindows = ({ conversation }) => {
       {conversation.map((convo, index) => (
         <ChatBubble key={index} user={convo.type} text={convo.message} />
       ))}
+      {/* <ChatBubble loading /> */}
     </Sheet>
   );
 };

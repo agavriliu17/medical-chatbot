@@ -17,6 +17,7 @@ const startingConversation = [
 
 function App() {
   const [conversation, setConversation] = useState(startingConversation);
+  // const [loading, setLoading] = useState(false); //TODO: Move this to context
   const [input, setInput] = useState("");
   const [chatID, setChatID] = useState("");
 

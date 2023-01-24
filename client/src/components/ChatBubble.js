@@ -4,8 +4,9 @@ import Avatar from "@mui/joy/Avatar";
 import Typography from "@mui/joy/Typography";
 
 import AiAvatar from "../images/chatbot_avatar.webp";
+import { LoadingChat } from "./LoadingChat";
 
-const ChatBubble = ({ user, text }) => {
+const ChatBubble = ({ user = "bot", text, loading }) => {
   return (
     <Sheet
       sx={{
@@ -27,7 +28,7 @@ const ChatBubble = ({ user, text }) => {
           maxWidth: "300px",
         }}
       >
-        <Typography>{text}</Typography>
+        {loading ? <LoadingChat /> : <Typography>{text}</Typography>}
       </Sheet>
       {user !== "bot" && (
         <Avatar
