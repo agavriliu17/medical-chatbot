@@ -63,7 +63,6 @@ function App() {
   };
 
   const getAIResponse = async (message) => {
-    console.log(message);
     try {
       const response = await axios
         .post(`http://127.0.0.1:8000/completion/${chatID}`, {
@@ -112,7 +111,7 @@ function App() {
               value={input}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
-              endDecorator={<Buttons input={input} setInput={setInput} sendMessage={sendMessage} />}
+              endDecorator={<Buttons sendMessage={sendMessage} />}
             />
           </Sheet>
         </Sheet>

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile
 from pydantic import BaseModel
 import uuid
 import json
@@ -95,3 +95,7 @@ def completion(conversation_id: str, item: Item):
     with open(file_name, "w") as file:
         json.dump(conversations, file, default=str)
     return botResponse
+
+@app.post("/upload_file/")
+async def create_upload_file(file: UploadFile):
+    return {"filename": file.filename}

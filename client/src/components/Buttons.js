@@ -4,60 +4,63 @@ import Button from "@mui/joy/Button";
 
 import IconButton from "@mui/joy/IconButton";
 import CircularProgress from "@mui/joy/CircularProgress";
-import EmojiObjectsOutlinedIcon from "@mui/icons-material/EmojiObjectsOutlined";
-import { Configuration, OpenAIApi } from "openai";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { useDropzone } from "react-dropzone";
+import axios from "axios";
 
-const PROMPTS = {
-  empty:
-    "Will autocomplete the user's text with an possible question he has about Conversational Artificial Intelligence team from E.on",
-  filled:
-    "Will autocomplete the user's text with an possible question he has about Conversational Artificial Intelligence team from E.on. Will think like an e.on employee and will only give short completions:",
-};
-
-const Buttons = ({ input, setInput, sendMessage }) => {
+const Buttons = ({ sendMessage }) => {
   const [loading, setLoading] = useState(false);
-  const [response, setResponse] = useState("");
+  const [files, setFiles] = useState([]);
+  const { getRootProps, getInputProps, open } = useDropzone({
+    noClick: true,
+    noKeyboard: true,
+    onDropAccepted: (files) => {
+      setFiles(files);
+    },
+    accept: {
+      "image/jpeg": [],
+      "image/png": [],
+    },
+  });
 
   useEffect(() => {
-    const formattedResponse = response.replace(/\s+/g, " ").trim();
-    setInput(input + " " + formattedResponse);
+    if (files.length > 0) {
+      handleUpload();
+    }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [response]);
+  }, [files]);
 
-  const configuration = new Configuration({
-    apiKey: process.env.REACT_APP_OPEN_API_1,
-  });
-  const openai = new OpenAIApi(configuration);
+  const handleUpload = async () => {
+    setLoading(true);
 
-  const handleRequest = async () => {
+    const file = files[0];
+    const formData = new FormData();
+    formData.append("file", file);
+
     try {
-      let prompt = `${PROMPTS.filled} 
-        ${input}`;
-      if (input === "") {
-        prompt = PROMPTS.empty;
-      }
+      const response = await axios
+        .post(`http://127.0.0.1:8000/upload_file/`, formData)
+        .then((res) => res.data);
 
-      setLoading(true);
-      const response = await openai.createCompletion({
-        model: "text-davinci-003",
-        prompt: prompt,
-        temperature: 0,
-        max_tokens: 33,
-        top_p: 0.5,
-        frequency_penalty: 1.65,
-        presence_penalty: 0.55,
-      });
+      console.log(response);
 
-      setResponse(response.data.choices[0].text);
+      // settimeout to simulate loading
+      setTimeout(() => {
+        setLoading(false);
+      }, 2000);
     } catch (error) {
       console.log(error);
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
-    <Sheet sx={{ display: "flex", flexDirection: "row" }}>
+    <Sheet
+      sx={{ display: "flex", flexDirection: "row" }}
+      {...getRootProps({ className: "dropzone" })}
+    >
+      <input {...getInputProps()} />
       <IconButton
         variant="plain"
         sx={{
@@ -66,9 +69,9 @@ const Buttons = ({ input, setInput, sendMessage }) => {
           marginRight: "5px",
           "&:hover": { backgroundColor: "transparent" },
         }}
-        onClick={handleRequest}
+        onClick={open}
       >
-        {loading ? <CircularProgress thickness={2} /> : <EmojiObjectsOutlinedIcon />}
+        {loading ? <CircularProgress thickness={2} /> : <CloudUploadIcon />}
       </IconButton>
       <Button sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }} onClick={sendMessage}>
         Send
