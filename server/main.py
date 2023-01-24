@@ -79,18 +79,19 @@ def completion(conversation_id: str, item: Item):
     print(prompt)
     try:
         response = openai.Completion.create(model="text-davinci-003", prompt=prompt, temperature=0.2,
-                                            max_tokens=100, top_p=0.5, frequency_penalty=1.65, presence_penalty=0.6,)
+                                            max_tokens=100, top_p=0.5, frequency_penalty=1.65, presence_penalty=0.6, stop=["User: "]  )
         completion = response["choices"][0]["text"].replace("\n\n", "")
         completion = re.sub(r"Bot: ", "", completion)
 
-        conversations[conversation_id].append({
+        botResponse = {
             "message": completion,
             "type": "bot",
             "timestamp": datetime.datetime.now()
-        })
+        }
+        conversations[conversation_id].append(botResponse)
     except Exception as e:
         raise HTTPException(status_code=500, detail="OpenAI API error")
 
     with open(file_name, "w") as file:
         json.dump(conversations, file, default=str)
-    return conversations[conversation_id]
+    return botResponse

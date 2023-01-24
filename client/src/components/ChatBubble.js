@@ -3,7 +3,7 @@ import Sheet from "@mui/joy/Sheet";
 import Avatar from "@mui/joy/Avatar";
 import Typography from "@mui/joy/Typography";
 
-import AiAvatar from "./images/chatbot_avatar.webp";
+import AiAvatar from "../images/chatbot_avatar.webp";
 
 const ChatBubble = ({ user, text }) => {
   return (
