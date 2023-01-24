@@ -1,8 +1,11 @@
-import React from "react";
+import { useContext } from "react";
 import Sheet from "@mui/joy/Sheet";
 import ChatBubble from "./ChatBubble";
+import ChatContext from "../context/ChatContext";
 
 const ChatWindows = ({ conversation }) => {
+  const { loadingCompletion } = useContext(ChatContext);
+
   return (
     <Sheet
       sx={{
@@ -24,7 +27,7 @@ const ChatWindows = ({ conversation }) => {
       {conversation.map((convo, index) => (
         <ChatBubble key={index} user={convo.type} text={convo.message} />
       ))}
-      {/* <ChatBubble loading /> */}
+      {loadingCompletion && <ChatBubble loading={loadingCompletion} />}
     </Sheet>
   );
 };

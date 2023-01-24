@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { CssVarsProvider } from "@mui/joy/styles";
 import Input from "@mui/joy/Input";
 import Buttons from "./components/Buttons";
 import Sheet from "@mui/joy/Sheet";
 import ChatWindows from "./components/ChatWindows";
 import { Typography } from "@mui/joy";
+import ChatContext from "./context/ChatContext";
 import axios from "axios";
 
 const startingConversation = [
@@ -17,17 +18,8 @@ const startingConversation = [
 
 function App() {
   const [conversation, setConversation] = useState(startingConversation);
-  // const [loading, setLoading] = useState(false); //TODO: Move this to context
   const [input, setInput] = useState("");
-  const [chatID, setChatID] = useState("");
-
-  useEffect(() => {
-    (async () => {
-      const response = await axios.get("http://127.0.0.1:8000/start_conversation");
-
-      setChatID(response.data);
-    })();
-  }, []);
+  const { chatID, setLoadingCompletion } = useContext(ChatContext);
 
   useEffect(() => {
     (async () => {
@@ -65,6 +57,7 @@ function App() {
 
   const getAIResponse = async (message) => {
     try {
+      setLoadingCompletion(true);
       const response = await axios
         .post(`http://127.0.0.1:8000/completion/${chatID}`, {
           text: message,
@@ -75,6 +68,8 @@ function App() {
     } catch (error) {
       console.log(error);
     }
+
+    setLoadingCompletion(false);
   };
 
   return (

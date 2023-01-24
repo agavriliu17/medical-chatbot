@@ -3,10 +3,10 @@ import "./Loading.css";
 
 const LoadingChat = () => {
   return (
-    <div class="typing">
-      <span class="circle scaling"></span>
-      <span class="circle scaling"></span>
-      <span class="circle scaling"></span>
+    <div className="typing">
+      <span className="circle scaling"></span>
+      <span className="circle scaling"></span>
+      <span className="circle scaling"></span>
     </div>
   );
 };
