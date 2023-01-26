@@ -24,7 +24,6 @@ function App() {
   useEffect(() => {
     (async () => {
       const lastEntry = conversation[conversation.length - 1];
-      console.log(lastEntry);
       if (lastEntry.type === "user") {
         await getAIResponse(lastEntry.message);
       }
