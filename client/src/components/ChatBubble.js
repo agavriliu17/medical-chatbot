@@ -6,7 +6,7 @@ import Typography from "@mui/joy/Typography";
 import AiAvatar from "../images/chatbot_avatar.webp";
 import { LoadingChat } from "./LoadingChat";
 
-const ChatBubble = ({ user = "bot", text, loading }) => {
+const ChatBubble = ({ user = "bot", text, loading, image = false }) => {
   return (
     <Sheet
       sx={{
@@ -28,7 +28,23 @@ const ChatBubble = ({ user = "bot", text, loading }) => {
           maxWidth: "300px",
         }}
       >
-        {loading ? <LoadingChat /> : <Typography>{text}</Typography>}
+        {image ? (
+          <img
+            src={text}
+            alt="Patient disease"
+            style={{
+              display: "block",
+              maxWidth: "275px",
+              maxHeight: "125px",
+              width: "auto",
+              height: "auto",
+            }}
+          />
+        ) : loading ? (
+          <LoadingChat />
+        ) : (
+          <Typography>{text}</Typography>
+        )}
       </Sheet>
       {user !== "bot" && (
         <Avatar

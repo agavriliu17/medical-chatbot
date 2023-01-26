@@ -79,7 +79,6 @@ def completion(conversation_id: str, item: Item):
             prompt += f"\nUser: {message['message']}"
         else:
             prompt += f"\nBot: {message['message']}"
-    print(prompt)
     try:
         response = openai.Completion.create(model="text-davinci-003", prompt=prompt, temperature=0.2,
                                             max_tokens=100, top_p=0.5, frequency_penalty=1.65, presence_penalty=0.6,
@@ -131,7 +130,7 @@ async def create_upload_file(conversation_id: str, file: UploadFile = File(...))
     result = model.predict(input_image)
     index = 0
     max = 0
-    print(result)
+
     for i in range(0, len(result[0])):
         if result[0][i] > max:
             max = result[0][i]
@@ -159,6 +158,6 @@ async def create_upload_file(conversation_id: str, file: UploadFile = File(...))
         print(e)
         raise HTTPException(status_code=500, detail="OpenAI API error")
 
-    with open(file_name, "w") as file:
+    with open("conversations.json", "w") as file:
         json.dump(conversations, file, default=str)
     return botResponse

@@ -13,7 +13,7 @@ import axios from "axios";
 const Buttons = ({ sendMessage }) => {
   const [loading, setLoading] = useState(false);
   const [files, setFiles] = useState([]);
-  const { chatID } = useContext(ChatContext);
+  const { chatID, addMessage, setLoadingCompletion } = useContext(ChatContext);
   const { getRootProps, getInputProps, open } = useDropzone({
     noClick: true,
     noKeyboard: true,
@@ -40,19 +40,20 @@ const Buttons = ({ sendMessage }) => {
     const file = files[0];
     const formData = new FormData();
     formData.append("file", file);
+    addMessage(URL.createObjectURL(file), "image");
+
+    setTimeout(() => {
+      setLoading(false);
+      setLoadingCompletion(true);
+    }, 1000);
 
     try {
-      console.log(chatID);
       const response = await axios
         .post(`http://127.0.0.1:8000/upload_file/${chatID}`, formData)
         .then((res) => res.data);
 
-      console.log(response);
-
-      // settimeout to simulate loading
-      setTimeout(() => {
-        setLoading(false);
-      }, 2000);
+      setLoadingCompletion(false);
+      addMessage(response, "bot");
     } catch (error) {
       console.log(error);
       setLoading(false);

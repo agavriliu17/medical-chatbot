@@ -8,23 +8,14 @@ import { Typography } from "@mui/joy";
 import ChatContext from "./context/ChatContext";
 import axios from "axios";
 
-const startingConversation = [
-  {
-    message: "Hello, I am medical assistance chatbot. What can I help you with?",
-    type: "bot",
-    timestamp: new Date().getTime(),
-  },
-];
-
 function App() {
-  const [conversation, setConversation] = useState(startingConversation);
   const [input, setInput] = useState("");
-  const { chatID, setLoadingCompletion } = useContext(ChatContext);
+  const { conversation, addMessage, chatID, setLoadingCompletion } = useContext(ChatContext);
 
   useEffect(() => {
     (async () => {
       const lastEntry = conversation[conversation.length - 1];
-      if (lastEntry.type === "user") {
+      if (lastEntry.type === "user" && !lastEntry.image) {
         await getAIResponse(lastEntry.message);
       }
     })();
@@ -43,14 +34,7 @@ function App() {
   };
 
   const sendMessage = async () => {
-    setConversation([
-      ...conversation,
-      {
-        message: input,
-        type: "user",
-        timestamp: new Date().getTime(),
-      },
-    ]);
+    addMessage(input, "user");
     setInput("");
   };
 
@@ -63,7 +47,7 @@ function App() {
         })
         .then((res) => res.data);
 
-      setConversation([...conversation, response]);
+      addMessage(response, "bot");
     } catch (error) {
       console.log(error);
     }
