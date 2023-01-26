@@ -48,7 +48,7 @@ const ChatBubble = ({ user = "bot", text, loading, image = false }) => {
       </Sheet>
       {user !== "bot" && (
         <Avatar
-          src="https://avatars.githubusercontent.com/u/75184750?v=4"
+          src="https://api.dicebear.com/5.x/shapes/svg?seed=Miss%20kitty"
           sx={{ width: "40px", height: "40px", margin: "10px" }}
         />
       )}

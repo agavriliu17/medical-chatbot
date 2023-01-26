@@ -67,32 +67,21 @@ function App() {
           flexDirection: "column",
         }}
       >
-        <Typography sx={{ marginBottom: "40px", fontSize: "50px" }}>
+        <Typography sx={{ marginBottom: "40px", fontSize: "50px", marginTop: "50px" }}>
           Medical Chatbot Demo
         </Typography>
 
-        <Sheet
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            marginBottom: "30px",
-            alignItems: "center",
-            justifyContent: "flex-start",
-            gap: "5rem",
-          }}
-        >
-          {/* Main chat */}
-          <Sheet>
-            <ChatWindows conversation={conversation} />
-            <Input
-              sx={{ "--Input-decorator-childHeight": "45px", width: "500px" }}
-              placeholder="Press the suggest button for inspiration"
-              value={input}
-              onChange={handleInputChange}
-              onKeyDown={handleKeyDown}
-              endDecorator={<Buttons sendMessage={sendMessage} />}
-            />
-          </Sheet>
+        {/* Main chat */}
+        <Sheet sx={{ height: "100%", marginBottom: "2rem" }}>
+          <ChatWindows conversation={conversation} />
+          <Input
+            sx={{ "--Input-decorator-childHeight": "45px", width: "500px" }}
+            placeholder="Press the suggest button for inspiration"
+            value={input}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
+            endDecorator={<Buttons sendMessage={sendMessage} />}
+          />
         </Sheet>
       </Sheet>
     </CssVarsProvider>
