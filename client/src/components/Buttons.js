@@ -1,16 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Sheet from "@mui/joy/Sheet";
 import Button from "@mui/joy/Button";
 
 import IconButton from "@mui/joy/IconButton";
 import CircularProgress from "@mui/joy/CircularProgress";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import ChatContext from "../context/ChatContext";
+
 import { useDropzone } from "react-dropzone";
 import axios from "axios";
 
 const Buttons = ({ sendMessage }) => {
   const [loading, setLoading] = useState(false);
   const [files, setFiles] = useState([]);
+  const { chatID } = useContext(ChatContext);
   const { getRootProps, getInputProps, open } = useDropzone({
     noClick: true,
     noKeyboard: true,
@@ -39,8 +42,9 @@ const Buttons = ({ sendMessage }) => {
     formData.append("file", file);
 
     try {
+      console.log(chatID);
       const response = await axios
-        .post(`http://127.0.0.1:8000/upload_file/`, formData)
+        .post(`http://127.0.0.1:8000/upload_file/${chatID}`, formData)
         .then((res) => res.data);
 
       console.log(response);
