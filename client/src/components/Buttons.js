@@ -55,6 +55,15 @@ const Buttons = ({ sendMessage }) => {
       setLoadingCompletion(false);
       addMessage(response, "bot");
     } catch (error) {
+      addMessage(
+        {
+          message: "Sorry, I'm having trouble connecting to the server. Please try again later.",
+          type: "bot",
+          timestamp: new Date().getTime(),
+        },
+        "bot"
+      );
+
       console.log(error);
       setLoading(false);
     }

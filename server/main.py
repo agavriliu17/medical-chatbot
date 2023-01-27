@@ -66,6 +66,9 @@ def completion(conversation_id: str, item: Item):
             status_code=404, detail="Conversation_id not found")
 
     text = item.text
+    if text[-1] not in [".", "?", "!"]:
+        text += "."
+    
     conversations[conversation_id].append({
         "message": text,
         "type": "user",

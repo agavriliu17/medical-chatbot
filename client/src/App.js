@@ -34,6 +34,8 @@ function App() {
   };
 
   const sendMessage = async () => {
+    if (!input) return;
+
     addMessage(input, "user");
     setInput("");
   };
@@ -49,6 +51,14 @@ function App() {
 
       addMessage(response, "bot");
     } catch (error) {
+      addMessage(
+        {
+          message: "Sorry, I'm having trouble connecting to the server. Please try again later.",
+          type: "bot",
+          timestamp: new Date().getTime(),
+        },
+        "bot"
+      );
       console.log(error);
     }
 
