@@ -27,7 +27,8 @@ for name in folder_names:
             if ".jpg" in image:
                 read_image = cv2.imread(str_folder_name + "\\" + image)
                 converted_image = Image.fromarray(read_image, 'RGB')
-                converted_image = converted_image.resize((INPUT_SIZE, INPUT_SIZE))
+                converted_image = converted_image.resize(
+                    (INPUT_SIZE, INPUT_SIZE))
                 dataset.append(np.array(converted_image))
                 label.append(label_number)
         label_number = label_number + 1
@@ -45,7 +46,8 @@ for image in new_folder_name:
 
 print(label_number)
 
-x_train, x_test, y_train, y_test = train_test_split(dataset, label, test_size=0.2, random_state=0)
+x_train, x_test, y_train, y_test = train_test_split(
+    dataset, label, test_size=0.2, random_state=0)
 
 # normalize the data
 x_train = normalize(x_train)
@@ -84,6 +86,8 @@ model.add(Activation('softmax'))
 # Binary CrossEntropy=1, sigmoid
 # Categorical Cross Entropy=2,softmax
 
-model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-model.fit(x_train, y_train, batch_size=16, verbose=1, epochs=25, validation_data=(x_test, y_test), shuffle=False)
+model.compile(loss='categorical_crossentropy',
+              optimizer='adam', metrics=['accuracy'])
+model.fit(x_train, y_train, batch_size=16, verbose=1, epochs=25,
+          validation_data=(x_test, y_test), shuffle=False)
 model.save('skincancer3.h5')
