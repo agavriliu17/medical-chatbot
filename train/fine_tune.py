@@ -9,7 +9,6 @@ with open(file) as f:
         for pattern in intent['patterns']:
             model.append(
                 {"prompt": pattern, "completion": intent["responses"][0]})
-            # print(pattern, intent['tag'])
 
 # write models in json file
 with open('model.json', 'w') as f:

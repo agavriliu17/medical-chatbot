@@ -24,11 +24,9 @@ app.add_middleware(
 )
 
 load_dotenv()
-openai.api_key = "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"
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
-
-# TODO: Rename this
-class Item(BaseModel):
+class TextPayload(BaseModel):
     text: str
 
 
@@ -57,7 +55,7 @@ def start_conversation():
 
 
 @app.post("/completion/{conversation_id}")
-def completion(conversation_id: str, item: Item):
+def completion(conversation_id: str, item: TextPayload):
     file_name = "conversations.json"
     with open('conversations.json', 'r') as f:
         conversations = json.load(f)
@@ -69,7 +67,7 @@ def completion(conversation_id: str, item: Item):
     text = item.text
     if text[-1] not in [".", "?", "!"]:
         text += "."
-    
+
     conversations[conversation_id].append({
         "message": text,
         "type": "user",
@@ -84,13 +82,13 @@ def completion(conversation_id: str, item: Item):
         else:
             prompt += f"\nBot: {message['message']}"
     try:
-        response = openai.Completion.create(model="text-davinci-003", prompt=prompt, temperature=0.2,
-                                            max_tokens=100, top_p=0.5, frequency_penalty=1.65, presence_penalty=0.6,
+        response = openai.Completion.create(model="davinci:ft-personal-2023-01-26-23-12-46", prompt=prompt, temperature=0.2,
+                                            max_tokens=100, top_p=0.5, frequency_penalty=1.65, presence_penalty=1.2,
                                             stop=["User: "])
         completion = response["choices"][0]["text"].replace("\n\n", "")
         completion = re.sub(r"Bot:", "", completion)
 
-        if(completion==""):
+        if (completion == ""):
             completion = "I don't think I've understand, please try again"
 
         botResponse = {
@@ -119,14 +117,17 @@ async def create_upload_file(conversation_id: str, file: UploadFile = File(...))
 
     file_name = file.filename
     file_path = os.path.join(
-        r"D:\facultate\Anul 3\Semestrul 1\Inteligenta Artificiala\medicalchatbot\medical-chatbot\server\files", file_name)
-    #detect skin
+        r"/Users/agavriliu/Documents/repos/medical-chatbot/server/files", file_name)
+
+    # detect skin
     with open(file_path, "wb") as f:
         f.write(file.file.read())
         f.close()
 
     INPUT_SIZE = 150
-    model = load_model(r"D:\facultate\Anul 3\Semestrul 1\Inteligenta Artificiala\medicalchatbot\medical-chatbot\server\skincancer\skinornot.h5")
+    model = load_model(
+        r"/Users/agavriliu/Documents/repos/medical-chatbot/train/skin_validation.h5", compile=False)
+    model.compile()
     image = cv2.imread(
         file_path)
     img = Image.fromarray(image)
@@ -134,15 +135,13 @@ async def create_upload_file(conversation_id: str, file: UploadFile = File(...))
     img = np.array(img)
     input_image = np.expand_dims(img, axis=0)
     result = model.predict(input_image)
-    # print(result)
-    # print(result[0])
-    skin=0
-    if result[0][0] > result[0][1]:
-        skin=0
-    else:
-        skin=1
-    if skin==0:
-        completion = "This image contain no skin!"
+
+    skin = False
+    if result[0][0] <= result[0][1]:
+        skin = True
+
+    if not skin:
+        completion = "Please provide an valid image of your affected skin, also check if the image is not blurred or too dark."
         botResponse = {
             "message": completion,
             "type": "bot",
@@ -150,10 +149,11 @@ async def create_upload_file(conversation_id: str, file: UploadFile = File(...))
         }
         conversations[conversation_id].append(botResponse)
         return botResponse
+
     else:
         INPUT_SIZE = 150
         model = load_model(
-            r"D:\facultate\Anul 3\Semestrul 1\Inteligenta Artificiala\medicalchatbot\medical-chatbot\server\skincancer\skincancer.h5", compile=False)
+            r"/Users/agavriliu/Documents/repos/medical-chatbot/train/skincancer.h5", compile=False)
         model.compile()
 
         image = cv2.imread(file_path)
@@ -171,8 +171,10 @@ async def create_upload_file(conversation_id: str, file: UploadFile = File(...))
                 index = i
 
         disease_predict = ""
-        DISEASES = ["actinic keratosis", "basal cell carcinoma", "dermatofibroma", "melanoma", "nevus", "pigmented benign keratosis", "seborrheic keratosis", "squamous cell carcinoma", "vascular lesion", "healthy skin"]
-        disease_predict = "You're a medical chatbot and you need to tell your patient that he has" + DISEASES[index]
+        DISEASES = ["actinic keratosis", "basal cell carcinoma", "dermatofibroma", "melanoma", "nevus",
+                    "pigmented benign keratosis", "seborrheic keratosis", "squamous cell carcinoma", "vascular lesion", "healthy skin"]
+        disease_predict = "You're a medical chatbot and you need to tell your patient that he has" + \
+            DISEASES[index]
 
         try:
             response = openai.Completion.create(model="text-davinci-003", prompt=disease_predict, temperature=0.2,

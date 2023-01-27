@@ -86,7 +86,7 @@ function App() {
           <ChatWindows conversation={conversation} />
           <Input
             sx={{ "--Input-decorator-childHeight": "45px", width: "500px" }}
-            placeholder="Press the suggest button for inspiration"
+            placeholder="Type your message here..."
             value={input}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}

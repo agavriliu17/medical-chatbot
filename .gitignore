@@ -17,9 +17,10 @@ yarn-debug.log*
 yarn-error.log*
 
 # Files 
-/server/files
-/server/conversations.json
+server/files
+server/conversations.json
 
-/train/skincancer.h5
+train/skincancer.h5
 /train/model_prepared.jsonl
-/train/model.json
+train/model.json
+train/skin_validation.h5
