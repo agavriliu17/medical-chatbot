@@ -24,7 +24,8 @@ app.add_middleware(
 )
 
 load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
+openai.api_key = "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"
+
 
 # TODO: Rename this
 class Item(BaseModel):
@@ -118,52 +119,79 @@ async def create_upload_file(conversation_id: str, file: UploadFile = File(...))
 
     file_name = file.filename
     file_path = os.path.join(
-        r"/Users/agavriliu/Documents/repos/medical-chatbot/server/files", file_name)
-
+        r"D:\facultate\Anul 3\Semestrul 1\Inteligenta Artificiala\medicalchatbot\medical-chatbot\server\files", file_name)
+    #detect skin
     with open(file_path, "wb") as f:
         f.write(file.file.read())
         f.close()
-    INPUT_SIZE = 150
-    model = load_model(
-        r"/Users/agavriliu/Documents/repos/medical-chatbot/train/skincancer.h5", compile=False)
-    model.compile()
 
-    image = cv2.imread(file_path)
+    INPUT_SIZE = 150
+    model = load_model(r"D:\facultate\Anul 3\Semestrul 1\Inteligenta Artificiala\medicalchatbot\medical-chatbot\server\skincancer\skinornot.h5")
+    image = cv2.imread(
+        file_path)
     img = Image.fromarray(image)
     img = img.resize((INPUT_SIZE, INPUT_SIZE))
     img = np.array(img)
     input_image = np.expand_dims(img, axis=0)
     result = model.predict(input_image)
-    index = 0
-    max = 0
-
-    for i in range(0, len(result[0])):
-        if result[0][i] > max:
-            max = result[0][i]
-            index = i
-    
-    disease_predict = ""
-    DISEASES = ["actinic keratosis", "basal cell carcinoma", "dermatofibroma", "melanoma", "nevus", "pigmented benign keratosis", "seborrheic keratosis", "squamous cell carcinoma", "vascular lesion", "healthy skin"]
-    disease_predict = "You're a medical chatbot and you need to tell your patient that he has" + DISEASES[index]
-
-    try:
-        response = openai.Completion.create(model="text-davinci-003", prompt=disease_predict, temperature=0.2,
-                                            max_tokens=100, top_p=0.5, frequency_penalty=1.65,
-                                            presence_penalty=0.6,
-                                            stop=["User: "])
-        completion = response["choices"][0]["text"].replace("\n\n", "")
-        completion = re.sub(r"Bot: ", "", completion)
-
+    # print(result)
+    # print(result[0])
+    skin=0
+    if result[0][0] > result[0][1]:
+        skin=0
+    else:
+        skin=1
+    if skin==0:
+        completion = "This image contain no skin!"
         botResponse = {
             "message": completion,
             "type": "bot",
             "timestamp": datetime.datetime.now()
         }
         conversations[conversation_id].append(botResponse)
-    except Exception as e:
-        print(e)
-        raise HTTPException(status_code=500, detail="OpenAI API error")
+        return botResponse
+    else:
+        INPUT_SIZE = 150
+        model = load_model(
+            r"D:\facultate\Anul 3\Semestrul 1\Inteligenta Artificiala\medicalchatbot\medical-chatbot\server\skincancer\skincancer.h5", compile=False)
+        model.compile()
 
-    with open("conversations.json", "w") as file:
-        json.dump(conversations, file, default=str)
-    return botResponse
+        image = cv2.imread(file_path)
+        img = Image.fromarray(image)
+        img = img.resize((INPUT_SIZE, INPUT_SIZE))
+        img = np.array(img)
+        input_image = np.expand_dims(img, axis=0)
+        result = model.predict(input_image)
+        index = 0
+        max = 0
+
+        for i in range(0, len(result[0])):
+            if result[0][i] > max:
+                max = result[0][i]
+                index = i
+
+        disease_predict = ""
+        DISEASES = ["actinic keratosis", "basal cell carcinoma", "dermatofibroma", "melanoma", "nevus", "pigmented benign keratosis", "seborrheic keratosis", "squamous cell carcinoma", "vascular lesion", "healthy skin"]
+        disease_predict = "You're a medical chatbot and you need to tell your patient that he has" + DISEASES[index]
+
+        try:
+            response = openai.Completion.create(model="text-davinci-003", prompt=disease_predict, temperature=0.2,
+                                                max_tokens=100, top_p=0.5, frequency_penalty=1.65,
+                                                presence_penalty=0.6,
+                                                stop=["User: "])
+            completion = response["choices"][0]["text"].replace("\n\n", "")
+            completion = re.sub(r"Bot: ", "", completion)
+
+            botResponse = {
+                "message": completion,
+                "type": "bot",
+                "timestamp": datetime.datetime.now()
+            }
+            conversations[conversation_id].append(botResponse)
+        except Exception as e:
+            print(e)
+            raise HTTPException(status_code=500, detail="OpenAI API error")
+
+        with open("conversations.json", "w") as file:
+            json.dump(conversations, file, default=str)
+        return botResponse
