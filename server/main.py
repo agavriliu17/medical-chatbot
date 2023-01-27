@@ -72,7 +72,7 @@ def completion(conversation_id: str, item: Item):
         "timestamp": datetime.datetime.now()
     })
 
-    prompt = "This is a conversation with an medical chatbot. The bot will try to diagnose the patient's disease and ask as questions about the symptoms to determine severity.\n"
+    prompt = "This is a conversation with Nurse Mary, an medical chatbot specialised in dermatology but also with general medical knowledge. The bot will try to diagnose the patient's disease and ask as questions about the symptoms to determine severity. Users also can upload photos of their skin.\n"
 
     for message in conversations[conversation_id]:
         if message["type"] == "user":
@@ -84,7 +84,10 @@ def completion(conversation_id: str, item: Item):
                                             max_tokens=100, top_p=0.5, frequency_penalty=1.65, presence_penalty=0.6,
                                             stop=["User: "])
         completion = response["choices"][0]["text"].replace("\n\n", "")
-        completion = re.sub(r"Bot: ", "", completion)
+        completion = re.sub(r"Bot:", "", completion)
+
+        if(completion==""):
+            completion = "I don't think I've understand, please try again"
 
         botResponse = {
             "message": completion,

@@ -5,7 +5,7 @@ const ChatContext = createContext();
 
 const startingConversation = [
   {
-    message: "Hello, I am medical assistance chatbot. What can I help you with?",
+    message: "Hello, I am Nurse Nina, your medical assistance chatbot. What can I help you with?",
     type: "bot",
     timestamp: new Date().getTime(),
   },
@@ -49,7 +49,6 @@ export const ChatProvider = ({ children }) => {
         },
       ]);
     } else {
-      console.log(conversation);
       setConversation((prev) => [...prev, message]);
     }
   };
